@@ -34,54 +34,59 @@ Please also note that:
 
 ### Intro
 
-In this test, you are going to work on objectives, the main feature of javelo!
+We are building a performance managment service for companies. We will focus on the strategy aspect.
+A company's strategy is defined by objectives. An objective is a goal with a theoric progress of amount of work defined over time.
 
-An objective represents a task that a user should accomply within a certain amount of time.
-
-This feature aims to help these users planify well those tasks, and track their progression in order to accomplish them smoothly and on time.
+Here is our plan:
+- Let any employee save their objectives on our platform
+- Let any employee check an objective's real progress at any given date and compare it to what's expected
 
 Example of a real life objective:
-```
+```JSON
 {
-  id: 17548,
-  title: "Make 50 blank tests to be trained for the javelo challenge",
-  start: 0,
-  start_date: '2017-12-01',
-  end_date: '2018-09-31',
-  target: 50,
-  unit: 'number'
+  "id": 17548,
+  "title": "Make 50 blank tests to be trained for the javelo challenge",
+  "start": 0,
+  "start_date": "2017-12-01",
+  "end_date": "2018-09-31",
+  "target": 50,
+  "unit": "number"
 }
 ```
 
 ### Level 1: Progress
 
-In this level, we'll focus on some records of objective's progress. For each one you should compute the corresponding `progress` value.
+An employee sets the starting and target values of each objective (`start` and `target`). They represent the amount of work to be done on this objective. On any day, they can record how close they are from the target of an objective.
 
-Progress is the objective's percentage achieved the value of the `progress_record` represents.
+A record's `progress` is the percentage of amount of work to be done represented by its `value`.
 
 ### Level 2: Progress Over Time
 
-In order to help people achieve their objectives, start and end dates are furnished.
+An employee also sets the days interval of their objectives (`start_date` and `end_date`).
+Let's improve the user experience, and provide the employee with a progress chart. The horizontal axis represents time, and the vertical axis represents the amount of work done.
+The progression model of the objective is the segment defined by the (`start_date`, `start`) and (`end_date`, `target`) points, representing the expected amount of work done over time.
 
-Objectives are expected to be completed linearly during these dates.
+An employee can record their progression on the chart at any date between start and end dates. They then can compare how far a record is from the expected amount of work done at that date.
 
-Each record is now dated. Meaning its value can be compared to the expected completion of the corresponding objective at that date.
-
-The `excess` is the difference between thos two values, in percentage of the expected completion.
+At a record's date, `excess` is in percentage of the expected amount of work done, the difference between:
+- the value of the record
+- the expected amount of work done
 
 ### Level 3: Milestones
 
-Sometimes users need more control over the theoric achievement of an objective, and the 2 starting and ending points are not enough.
-A milestone is a (time, value) point defining where the real achievement curve should pass. By using milestones, users can define better how they should complete their objectives over time between the starting and ending points.
+The linear progression model of the previous level isn't always enough to express what should happen between start and end dates. In order to provide flexibility on our platform, an employee can set milestones on their objectives. A milestone is a point on the progress chart through which the progression model passes. This makes the progression model piecewise linear, i.e. composed of multiple segments.
 
-The theoric achievement between milestones (and between a milestone and one of the start or end point) is linear.
-
-The excess is computed using the theoric achievement at the date of a record, the value of this record and the starting point.
+At a record's date, `excess` is in percentage of the expected amount of work done, the difference between:
+- the value of the record
+- the expected amount of work done
 
 ### Level 4: Objective Tree & Weighted Mean Progress
 
-Objectives can be children of other objectives. We say they have a parent objective.
+To better define a company's strategy, it is sometimes useful to organize objectives in a tree. An employee can set a `parent_id` on their objectives. The `parent_id` of an objective is its parent objective's `id`. An employee can also set a `weight` on a child objective.
 
-The theoric achievement of a parent objective is deduced from its children: at a certain date it is the mean of the theoric accomplishement of its children objectives, taking into account some coefficients.
+The `start` and `target` values of a parent objective are each the computed weighted mean of its children's.
+At a specific date, the expected amount of work done of a parent objective is the computed weighted mean of its children's.
 
-The start and end values of these parent objectives are also computed thanks to their children and corresponding coefficients.
+At a record's date, `excess` is in percentage of the expected amount of work done, the difference between:
+- the value of the record
+- the expected amount of work done
