@@ -3,35 +3,34 @@
 require 'date'
 
 class ProgressiveRecord
-  attr_reader :id, :objective, :value, :date, :milestones
+  attr_reader :id, :objective, :value, :date
 
-  def initialize(id, objective, value, date, milestones)
+  def initialize(id, objective, value, date)
     @id = id
     @objective = objective
     @value = value
     @date = Date.strptime(date, '%Y-%m-%d')
-    @milestones = milestones.sort_by { |m| m.date.mjd }
   end
 
   def get_milestone_values
     target_date = @objective.end_date
     start_date = @objective.start_date
     start = @objective.start
-    (0..@milestones.size - 1).each do |i|
-      if @milestones[i].date >= @date && i - 1 >= 0
+    (0..@objective.milestones.size - 1).each do |i|
+      if @objective.milestones[i].date >= @date && i - 1 >= 0
         # means we are between two milestones
-        target_date = @milestones[i].date
-        start_date = @milestones[i - 1].date
-        start = @milestones[i - 1].target
+        target_date = @objective.milestones[i].date
+        start_date = @objective.milestones[i - 1].date
+        start = @objective.milestones[i - 1].target
         break
-      elsif @milestones[i].date >= @date
+      elsif @objective.milestones[i].date >= @date
         # means we are before first milestone
-        target_date = @milestones[i].date
+        target_date = @objective.milestones[i].date
         break
-      elsif i == @milestones.size - 1
+      elsif i == @objective.milestones.size - 1
         # means we are after last milestone
-        start_date = @milestones[i].date
-        start = @milestones[i].target
+        start_date = @objective.milestones[i].date
+        start = @objective.milestones[i].target
         break
       end
     end
